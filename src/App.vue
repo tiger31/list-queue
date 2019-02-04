@@ -54,10 +54,14 @@ export default {
     }  
   },
   mounted() {
-    if (localStorage.getItem(this.list))
-      this.$store.commit('setFollowId', localStorage.getItem(this.list));
+    if (localStorage.getItem(this.list) !== undefined) {
+      console.log(this.$store);
+      this.$store.commit('setFollowId', {
+	followId: parseInt(localStorage[this.list])
+      });
+    }
     //TODO axios
-    console.log(this.$route.params);	
+    console.log(this.$route.params);
   }
 }
 </script>
