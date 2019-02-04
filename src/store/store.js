@@ -58,7 +58,20 @@ const list = {
       }
       return obj;
     }
-  }
+  },
+  mutations: {
+    setOrder: (state, payload) => {
+      if (state.queuesList[payload.queue] !== undefined)
+	state.queuesOrder[payload.queue] = payload.order;
+    }
+  },
+  actions: {
+    async setOrder({ commit }, payload) {
+    	//TODO await axios
+	console.log(payload);
+	commit('setOrder', payload);
+    }
+  },
 }
 
 export default new Vuex.Store({
