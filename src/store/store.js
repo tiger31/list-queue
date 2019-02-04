@@ -12,6 +12,7 @@ const list = {
     queuesOrder: {}
     */
       list: "jhdf69ux",
+      followId: undefined,
       elements: {
 	0: "Графов Денис" ,
 	1: "Сидорина Елена",
@@ -45,11 +46,10 @@ const list = {
 	});
       return arr;
     },
-    getQueueWithFollow: state => id => {
+    getQueueWithFollow: state => {
       let obj = {};
       for (let queue of Object.keys(state.queuesList)) {
-	const order = state.queuesOrder[queue].indexOf(id); 
-	console.log(order);
+	const order = state.queuesOrder[queue].indexOf(state.followId); 
 	obj[queue] = {
 	  id : queue,
 	  name : state.queuesList[queue],
@@ -63,6 +63,12 @@ const list = {
     setOrder: (state, payload) => {
       if (state.queuesList[payload.queue] !== undefined)
 	state.queuesOrder[payload.queue] = payload.order;
+    },
+    setFollowId: (state, payload) => {
+      if (payload.followId in state.elements) {
+        state.followId = payload.followId;
+	localStorage.setItem(state.list, state.followId);
+      }
     }
   },
   actions: {

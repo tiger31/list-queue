@@ -3,7 +3,7 @@
   <v-container fluid :class="{ 'py-0' : !$vuetify.breakpoint.smAndDown, 'px-0' : !$vuetify.breakpoint.mdAndUp}">    
       <v-card class="elevation-8 queue">
 	<v-list>
-	  <draggable v-model="userList" :options="options" @update="onUpdate">
+	  <draggable :options="options" @update="onUpdate">
 	    <transition-group type="transition" :name="'flip-list'">
 	      <QueueElement class="queue-element" v-for="user in list" 
 		  :key="user.id" 
@@ -33,17 +33,6 @@
       data: function () {
         return {
           editable : true,
-	  followId : 3,
-          userList : [
-            { id: 0, name: "Графов Денис" },
-            { id: 1, name: "Сидорина Елена" },
-            { id: 2, name: "Хираев Малик" },
-            { id: 3, name: "Сергеев Илья" },
-            { id: 4, name: "Судакова Алена" },
-            { id: 5, name: "Чуприна Анастасия" },
-            { id: 6, name: "Косенков Михаил" },
-            { id: 7, name: "Дмитрий Арихиерев" },
-          ]
         }
       },
       mounted () {
@@ -60,6 +49,9 @@
         },
 	list () {
 	  return this.$store.getters.getQueueOrdered(this.queue) || [];
+	},
+	followId () {
+	  return this.$store.state.list.followId;
 	}
       },
       methods: {
@@ -91,10 +83,9 @@
 	  }
         },
 	onFollow(id) { 
-          let index = this.userList.findIndex((element) => element.id === id);
-	  if (index > -1) {
-	    this.followId = id;
-	  }
+	  this.$store.commit('setFollowId', {
+	    followId: id
+	  });
 	},
 	onUpdate(event) {
 	  console.log(event);

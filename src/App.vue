@@ -39,21 +39,23 @@ export default {
   components: {Navbar, Queue},
   data : function() { 
     return {
-      followId: 1,
-      list: "jhdf69ux", 
+      list: "jhdf69ux",
     }
   },
   computed: {
     queuesList() {
-      return this.$store.getters.getQueueWithFollow(this.followId);
+      return this.$store.getters.getQueueWithFollow;
     },
     currentQueue() {
       return this.$route.params.id;
-    }
+    },
+    followId() {
+      return this.$store.state.list.followId;
+    }  
   },
   mounted() {
-    if (localStorage.getItem("followId"))
-      this.followId = localStorage.getItem("followId");
+    if (localStorage.getItem(this.list))
+      this.$store.commit('setFollowId', localStorage.getItem(this.list));
     //TODO axios
     console.log(this.$route.params);	
   }
