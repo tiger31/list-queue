@@ -39,7 +39,7 @@ const list = {
   getters: {
     getQueueOrdered: state => id => {
       let arr = [];
-      for (let element of state.queuesOrder[id])
+      for (let element of state.queuesOrder[id] || [])
         arr.push({
 	  id: element,
 	  name: state.elements[element]

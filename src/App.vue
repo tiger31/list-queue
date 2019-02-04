@@ -54,6 +54,10 @@ export default {
     }  
   },
   mounted() {
+    //TODO temp fix remove futher
+    if (this.$route.name == "root") {
+      this.$router.push(`${this.list}/1`);
+    }
     if (localStorage.getItem(this.list) !== undefined) {
       console.log(this.$store);
       this.$store.commit('setFollowId', {
@@ -61,7 +65,13 @@ export default {
       });
     }
     //TODO axios
-    console.log(this.$route.params);
+    console.log(this.$route);
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.name != "queue")
+        this.$router.push(`${this.list}/1`);
+    }
   }
 }
 </script>

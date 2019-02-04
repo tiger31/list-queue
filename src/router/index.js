@@ -7,6 +7,6 @@ Vue.use(Router)
 export default new Router({
   routes: [
     { path: "/" , name: "root", component: App},	  
-    { path: "/:list/:id", component: App }
+    { path: "/:list/:id", name: "queue", component: App }
   ]
 })
