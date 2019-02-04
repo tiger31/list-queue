@@ -23,7 +23,7 @@
 	  </v-card>
 	</v-flex>
 	<v-flex md8 sm12>
-	  <Queue/>
+	  <Queue :queue="currentQueue"/>
 	</v-flex>
       </v-layout>
     </v-container>
@@ -45,16 +45,17 @@ export default {
   },
   computed: {
     queuesList() {
-      const list = this.$store.getters.getQueueWithFollow(this.followId);
-      console.log(list);
       return this.$store.getters.getQueueWithFollow(this.followId);
+    },
+    currentQueue() {
+      return this.$route.params.id;
     }
   },
   mounted() {
     if (localStorage.getItem("followId"))
       this.followId = localStorage.getItem("followId");
     //TODO axios
-    
+    console.log(this.$route.params);	
   }
 }
 </script>

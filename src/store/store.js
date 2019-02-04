@@ -12,16 +12,16 @@ const list = {
     queuesOrder: {}
     */
       list: "jhdf69ux",
-      elements: [
-	{ id: 0, name: "Графов Денис" },
-	{ id: 1, name: "Сидорина Елена" },
-	{ id: 2, name: "Хираев Малик" },
-	{ id: 3, name: "Сергеев Илья" },
-	{ id: 4, name: "Судакова Алена" },
-	{ id: 5, name: "Чуприна Анастасия" },
-	{ id: 6, name: "Косенков Михаил" },
-	{ id: 7, name: "Дмитрий Арихиерев" },
-      ],
+      elements: {
+	0: "Графов Денис" ,
+	1: "Сидорина Елена",
+	2: "Хираев Малик",
+	3: "Сергеев Илья",
+	4: "Судакова Алена",
+	5: "Чуприна Анастасия",
+	6: "Косенков Михаил",
+	7: "Дмитрий Арихиерев",
+      },
       queuesList: {
 	1: "Трансляторы",
 	2: "ОС",
@@ -38,7 +38,7 @@ const list = {
   getters: {
     getQueueOrdered: state => id => {
       let arr = [];
-      for (element of state.queuesOrder[id])
+      for (let element of state.queuesOrder[id])
         arr.push({
 	  id: element,
 	  name: state.elements[element]

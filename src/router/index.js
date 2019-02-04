@@ -5,7 +5,8 @@ import App from '../App.vue'
 Vue.use(Router)
 
 export default new Router({
-  routes: [ 
-    { path: "/queue/:id", component: App }
+  routes: [
+    { path: "/" , name: "root", component: App},	  
+    { path: "/:list/:id", component: App }
   ]
 })

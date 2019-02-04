@@ -5,7 +5,7 @@
 	<v-list>
 	  <draggable v-model="userList" :options="options">
 	    <transition-group type="transition" :name="'flip-list'">
-	      <QueueElement class="queue-element" v-for="user in userList" 
+	      <QueueElement class="queue-element" v-for="user in list" 
 		  :key="user.id" 
 		  :unique-key="user.id" 
 		  :follow="user.id === followId" 
@@ -29,6 +29,7 @@
     export default {
       name: "Queue",
       components: {QueueElement, draggable},
+      props: ["queue"],
       data: function () {
         return {
           editable : true,
@@ -46,7 +47,7 @@
         }
       },
       mounted () {
-	console.log(this.$vuetify.breakpoint);	
+	console.log(this.$vuetify.breakpoint);
       },
       computed: {
         options () {
@@ -56,7 +57,11 @@
             disabled: !this.editable,
             ghostClass: "list-item-ghost"
           }
-        }
+        },
+	list () {
+	  console.log(this.$store.getters.getQueueOrdered(this.queue) || []);
+	  return this.$store.getters.getQueueOrdered(this.queue) || [];
+	}
       },
       methods: {
         onDone(id) {
