@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import firebase from 'firebase'
 
 Vue.use(Vuex);
 
@@ -72,10 +73,35 @@ const list = {
     }
   },
   actions: {
+    //Getters
+    async getList({ commit }, payload) {
+      firebase.firestore().collection("lists").doc(payload.list).get()
+        .then((doc) => console.log(doc.data()))
+        .catch((err) => console.log(err));
+    },
+    //Setters
     async setOrder({ commit }, payload) {
     	//TODO await axios
 	console.log(payload);
 	commit('setOrder', payload);
+    },
+    //Adders
+    async addList({ dispatch, commit }, payload) {
+      if (firebase.auth().currentUser) {
+      	firebase.firestore().collection("lists").add({
+	  owner: firebase.auth().currentUser.uid,
+	  name: payload.name,
+	  elements: [],
+	  editors: [],
+	  queues: []
+	}).then((doc) => {
+	  console.log("Saved");
+	  dispatch('getList',{ list: doc.id });
+	}) //TODO Vuex switch lists
+	  .catch((err) => { console.log(err); return false; });
+	return true;
+      }
+      return false;
     }
   },
 }
