@@ -2,13 +2,24 @@
   <main>
   <v-container fluid :class="{ 'py-0' : !$vuetify.breakpoint.smAndDown, 'px-0' : !$vuetify.breakpoint.mdAndUp}">    
       <v-card class="elevation-8 queue">
+	<v-toolbar dark>
+	  <v-toolbar-title>
+	    {{$store.state.list.queuesList[queue]}}
+	  </v-toolbar-title>
+	  <v-spacer></v-spacer>
+	  <v-btn icon @click="editable = !editable">
+	    <v-icon v-if="!editable">settings</v-icon>
+	    <v-icon v-else>check</v-icon>
+	  </v-btn>
+	</v-toolbar>  
 	<v-list>
 	  <draggable :options="options" @update="onUpdate">
 	    <transition-group type="transition" :name="'flip-list'">
 	      <QueueElement class="queue-element" v-for="user in list" 
 		  :key="user.id" 
 		  :unique-key="user.id" 
-		  :follow="user.id === followId" 
+		  :follow="user.id === followId"
+		  :editable="editable"			   
 		  @done="onDone"
 		  @removed="onRemoved"
 		  @follow="onFollow">
@@ -32,7 +43,7 @@
       props: ["queue"],
       data: function () {
         return {
-          editable : true,
+          editable : false,
         }
       },
       mounted () {

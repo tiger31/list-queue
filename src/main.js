@@ -12,11 +12,22 @@ import Vuex from 'vuex';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router'
 
+import firebase from 'firebase'
+
+var config = {
+    apiKey: "AIzaSyD31QAARDb9OOb3-klyIe-9s07majjvico",
+    authDomain: "list-queue.firebaseapp.com",
+    databaseURL: "https://list-queue.firebaseio.com",
+    projectId: "list-queue",
+    storageBucket: "list-queue.appspot.com",
+    messagingSenderId: "827885448656"
+};
+
+firebase.initializeApp(config);
+
 Vue.use(Vuex)
 Vue.use(Vuetify);
 Vue.use(VueRouter);
-
-console.log(store);
 
 Vue.config.productionTip = false
 

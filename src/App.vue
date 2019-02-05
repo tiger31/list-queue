@@ -1,81 +1,11 @@
 <template>
-<v-app>
-  <v-toolbar app>
-    <v-toolbar-side-icon></v-toolbar-side-icon>
-    <v-toolbar-title>Queue?</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-toolbar-items>
-      <v-btn icon>
-	<router-link to="/settings">
-	  <v-icon>settings</v-icon>
-	</router-link>
-      </v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
-  <v-content>
-    <v-container fluid>
-      <v-layout wrap justify-space-around row>
-	<v-flex md4 sm12>
-	  <v-card class="elevation-8">
-	    <v-navigation-drawer floating permanent value="true" width="100%">
-	      <Navbar :queuesList="queuesList" :list="list"></Navbar>
-	    </v-navigation-drawer>
-	  </v-card>
-	</v-flex>
-	<v-flex md8 sm12>
-	  <Queue :queue="currentQueue"/>
-	</v-flex>
-      </v-layout>
-    </v-container>
-  </v-content>
-</v-app>
+  <router-view></router-view>	
 </template>
 
 <script>
-import Queue from "@/components/Queue";
-import Navbar from "./components/Navbar";
 export default {
   name: 'App',
-  components: {Navbar, Queue},
   data : function() { 
-    return {
-      list: "jhdf69ux",
-    }
+    return {}
   },
-  computed: {
-    queuesList() {
-      return this.$store.getters.getQueueWithFollow;
-    },
-    currentQueue() {
-      return this.$route.params.id;
-    },
-    followId() {
-      return this.$store.state.list.followId;
-    }  
-  },
-  mounted() {
-    //TODO temp fix remove futher
-    if (this.$route.name == "root") {
-      this.$router.push(`${this.list}/1`);
-    }
-    if (localStorage.getItem(this.list) !== undefined) {
-      console.log(this.$store);
-      this.$store.commit('setFollowId', {
-	followId: parseInt(localStorage[this.list])
-      });
-    }
-    //TODO axios
-    console.log(this.$route);
-  },
-  watch: {
-    '$route' (to, from) {
-      if (to.name != "queue")
-        this.$router.push(`${this.list}/1`);
-    }
-  }
 }
-</script>
-
-<style>
-
-</style>
