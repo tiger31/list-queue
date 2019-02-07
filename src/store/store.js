@@ -88,18 +88,13 @@ const list = {
     //Adders
     async addList({ dispatch, commit }, payload) {
       if (firebase.auth().currentUser) {
-      	firebase.firestore().collection("lists").add({
+      	return firebase.firestore().collection("lists").add({
 	  owner: firebase.auth().currentUser.uid,
 	  name: payload.name,
 	  elements: [],
 	  editors: [],
 	  queues: []
-	}).then((doc) => {
-	  console.log("Saved");
-	  dispatch('getList',{ list: doc.id });
-	}) //TODO Vuex switch lists
-	  .catch((err) => { console.log(err); return false; });
-	return true;
+	});
       }
       return false;
     }
