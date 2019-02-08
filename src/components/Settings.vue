@@ -30,7 +30,7 @@
 	</v-list-tile>
 	<v-list-tile>
 	  <v-list-tile-avatar tile>
-	    <v-icon>add</v-icon>
+	    <v-icon>power_settings_new</v-icon>
 	  </v-list-tile-avatar>
 	  <v-list-tile-content>
 	    <v-list-tile-title>
@@ -52,8 +52,11 @@
 	      :disabled="loaders.newList"
 	    >Добавить</v-btn>
 	  </v-container>
+		<v-container>
+			<UserLists @listChoose="setActiveList" :lists="lists"/>
+		</v-container>
 	  <v-container v-if="currentList" fluid>
-	    <ListView :list="currentList"/>
+	    <ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
 	  </v-container>
 	</v-flex>
       </v-layout>
@@ -63,37 +66,63 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import firebase from 'firebase'
 import ListView from './ListView.vue'
+import UserLists from './UserLists.vue'
 
 export default {
   name: 'Settings',
-  components: { ListView },
+  components: { ListView, UserLists },
   data () {
     return {
       newList: "",
       currentList: undefined,
       rules: {
         newList: [
-	  v => !!v || "Название списка не может быть пустой строкой"
-	]
+					v => !!v || "Название списка не может быть пустой строкой"
+				]
       },
       loaders: {
         newList: false
-      }
+      },
+			lists: {},
     }
   },
-
+  computed: {
+		currentListData() {
+			return (this.currentList) ? this.lists[this.currentList] : undefined;
+		}
+	},
   methods: {
     addNewList () {
       if (this.newList != "") {
-	this.loaders.newList = true;	
-	this.$store.dispatch('addList', { name: this.newList })
-	  .then((doc) => this.currentList = doc.id)
-	  .catch((err) => console.log(err))
+			this.loaders.newList = true;	
+			this.$store.dispatch('addList', { name: this.newList })
+				.then((doc) => this.currentList = doc.id)
+				.catch((err) => console.log(err))
       }
     },
-  }
+		setActiveList(key) {
+		  this.currentList = key;
+		},
+		getUserLists () {	
+			firebase.firestore().collection("lists").where("owner", "==", firebase.auth().currentUser.uid).get()
+				.then((querySnapshot) => querySnapshot.forEach(doc => Vue.set(this.lists, doc.id, doc.data())))
+				.catch((err) => console.log("Ошибка при получание списков пользователя", err));
+		},
+		updateList(list, elements) {
+			Vue.set(this.lists[list], 'elements', elements)
+		}
+  },
+	mounted () {
+		firebase.auth().onAuthStateChanged((user) => {
+			if (user)
+				user.getIdToken()
+					.then(() => this.getUserLists())
+					.catch((err) => console.log(err))
+		})
+	}
 }
 
 </script>

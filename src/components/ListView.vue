@@ -49,54 +49,50 @@ import firebase from 'firebase'
 
 export default {
   name: "ListView",
-  props: ["list"],
+  props: ["list", "listData"],
   data () {
     return {
-      present: false,
       editMode: false,
       newElement: "",
       addingNewElement: false,
       rules: {
         newElement: [
-	  v => !!v || "Элемент не может быть пустой строкой"
-	]
+					v => !!v || "Элемент не может быть пустой строкой"
+				]
       },
-      listData: {},
       newElementsList: []
     }
-  },
-  mounted() { 
-    firebase.firestore().collection("lists").doc(this.list).get()
-      .then((list) => {
-	this.listData = list.data()
-	this.newElementsList.push(...Vue.util.extend({}, this.listData.elements));
-	this.present = true;
-      }) .catch((err) => console.log(err))
   },
   computed: {
     changed() {
       if (this.listData.elements.length != this.newElementsList.length)
-	return true;
+				return true;
       else {
         let old = this.listData.elements.map(e => e.id).sort(this.sort);
-	let n = this.newElementsList.map(e => e.id).sort(this.sort);
-	for (let i = 0; i < n.length; i++)
-	  if (old[i].id != n[i].id)
-	    return true;
-	return false;
+				let n = this.newElementsList.map(e => e.id).sort(this.sort);
+				for (let i = 0; i < n.length; i++)
+				if (old[i].id != n[i].id)
+					return true;
+				return false;
       }
-    }
+    },
+		present() {
+		  return this.list !== undefined;
+		}
   },
+	mounted () {	
+		Vue.set(this,'newElementsList', Object.values(Vue.util.extend({}, this.listData.elements)));
+	},
   methods: {
     addNewElement () {
       if (this.newElement) {
-	let ids = [];
-	ids.push(...this.newElementsList.map(e => e.id), 
-	  ...this.listData.elements.map(e => e.id));
-	let id = ((ids.length > 0) ? Math.max(ids) : -1) + 1;
-	this.newElementsList.push({id: id, name: this.newElement});
-	this.newElement = "";
-	this.addingNewElement = false;
+				let ids = [];
+					ids.push(...this.newElementsList.map(e => e.id), 
+						...this.listData.elements.map(e => e.id));
+				let id = ((ids.length > 0) ? Math.max(...ids) : -1) + 1;
+				this.newElementsList.push({id: id, name: this.newElement});
+				this.newElement = "";
+				this.addingNewElement = false;
       }
     },
     sort(a, b) {
@@ -106,12 +102,17 @@ export default {
     },
     saveElements() {
       if (this.changed) {
-	firebase.firestore().collection("lists").doc(this.list).update({
-	  elements: this.newElementsList
-	})
+				firebase.firestore().collection("lists").doc(this.list).update({
+					elements: this.newElementsList
+				}).then(() => this.$emit("updateList", this.list, Object.values(Vue.util.extend(this.newElementsList))));
       }
     }
-  }
+  },
+	watch: {
+		listData (n, o) {
+			Vue.set(this,'newElementsList', Object.values(Vue.util.extend({}, n.elements)));
+		}
+	}
 }
 
 </script>
