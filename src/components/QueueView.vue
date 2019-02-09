@@ -68,16 +68,16 @@ export default {
       if (this.listData.queues.length != this.newQueuesList.length)
 				return true;
       else {
-        let old = this.listData.queues.sort(this.sort);
-				let n = this.newQueuesList.sort(this.sort);
-				for (let i = 0; i < n.length; i++)
-					if (old[i].id != n[i].id || old[i].order.length != n[i].order.length)
-						return true;
-					else 
-						for (let j = 0; i < n[i].order.length; i++)
-							if (n[i].order[j] != old[i].order[j])
-								return true;
-				return false;
+        let old = this.listData.queues.map(e => e).sort(this.sort);
+        let n = this.newQueuesList.map(e => e).sort(this.sort);
+		for (let i = 0; i < n.length; i++)
+            if (old[i].id != n[i].id || old[i].order.length != n[i].order.length)
+                return true;
+            else
+                for (let j = 0; j < n[i].order.length; j++)
+                    if (n[i].order[j] != old[i].order[j])
+                        return true;
+        return false;
       }
     },
 		present() {
