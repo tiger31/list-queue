@@ -57,6 +57,7 @@
 		</v-container>
 	  <v-container v-if="currentList" fluid>
 	    <ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
+			<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
 	  </v-container>
 	</v-flex>
       </v-layout>
@@ -70,10 +71,11 @@ import Vue from 'vue'
 import firebase from 'firebase'
 import ListView from './ListView.vue'
 import UserLists from './UserLists.vue'
+import QueueView from './QueueView.vue'
 
 export default {
   name: 'Settings',
-  components: { ListView, UserLists },
+  components: { ListView, QueueView, UserLists },
   data () {
     return {
       newList: "",
@@ -113,6 +115,9 @@ export default {
 		},
 		updateList(list, elements) {
 			Vue.set(this.lists[list], 'elements', elements)
+		},
+		updateQueues(list, elements) {
+			Vue.set(this.lists[list], 'queues', elements)
 		}
   },
 	mounted () {
