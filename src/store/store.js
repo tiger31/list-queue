@@ -42,59 +42,77 @@ const list = {
       let arr = [];
       for (let element of state.queuesOrder[id] || [])
         arr.push({
-	  id: element,
-	  name: state.elements[element]
-	});
+				  id: element,
+	 				 name: state.elements[element]
+				});
       return arr;
     },
     getQueueWithFollow: state => {
       let obj = {};
       for (let queue of Object.keys(state.queuesList)) {
-	const order = state.queuesOrder[queue].indexOf(state.followId); 
-	obj[queue] = {
-	  id : queue,
-	  name : state.queuesList[queue],
-	  order : (order > -1) ? order + 1 : undefined
-	}
+				const order = (state.followId) ? state.queuesOrder[queue].indexOf(state.followId) : -1; 
+				obj[queue] = {
+	  			id : queue,
+	  			name : state.queuesList[queue],
+	  			order : (order > -1) ? order + 1 : undefined
+				}
       }
       return obj;
     }
   },
   mutations: {
-    setOrder: (state, payload) => {
-      if (state.queuesList[payload.queue] !== undefined)
-	state.queuesOrder[payload.queue] = payload.order;
-    },
     setFollowId: (state, payload) => {
       if (payload.followId in state.elements) {
         state.followId = payload.followId;
-	localStorage.setItem(state.list, state.followId);
+				localStorage.setItem(state.list, state.followId);
       }
+    },
+    setList: (state, payload) => {
+      state.list = payload.list;
+			let elements = {};
+			let queues = {};
+			let orders = {};
+			for (let element of payload.data.elements)
+				elements[element.id] = element.name;
+			for (let queue of payload.data.queues) {
+				queues[queue.id] = queue.name;
+				orders[queue.id] = queue.order;
+			}
+			state.elements = elements;
+			state.queuesList = queues;
+			state.queuesOrder = orders;
     }
+	  
   },
   actions: {
     //Getters
     async getList({ commit }, payload) {
-      firebase.firestore().collection("lists").doc(payload.list).get()
-        .then((doc) => console.log(doc.data()))
-        .catch((err) => console.log(err));
+      firebase.firestore().collection("lists").doc(payload.list).onSnapshot(
+        (doc) => {
+	  			commit('setList', {
+						list: payload.list,
+						data: doc.data()
+					});
+				}
+      );
     },
     //Setters
-    async setOrder({ commit }, payload) {
-    	//TODO await axios
-	console.log(payload);
-	commit('setOrder', payload);
+    async setOrder({ state, commit }, payload) {
+			firebase.firestore().collection('lists').doc(state.list).update({
+				[`queues.${payload.queue}.order`] : payload.order
+			}).then(() => console.log("Order synced with firestore"))
+				.catch((err) => console.log(err));
     },
     //Adders
     async addList({ dispatch, commit }, payload) {
       if (firebase.auth().currentUser) {
       	return firebase.firestore().collection("lists").add({
-	  owner: firebase.auth().currentUser.uid,
-	  name: payload.name,
-	  elements: [],
-	  editors: [],
-	  queues: []
-	});
+	  			owner: firebase.auth().currentUser.uid,
+				  name: payload.name,
+				  elements: [],
+				  editors: [],
+				  queues: {},
+				});
       }
       return false;
     }

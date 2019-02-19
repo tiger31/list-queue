@@ -6,7 +6,7 @@
 	  :to="{path : '/' + list + '/' + queue.id}"
 	  tag="div">
 	  <v-list-tile @click="">
-	    <v-list-tile-avatar color="purple" size="28">
+	    <v-list-tile-avatar color="deep-purple lighten-1" size="28">
 	    <span class="white--text">
 	      {{(queue.order)?queue.order:'-'}}
 	    </span>

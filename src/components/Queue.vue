@@ -1,8 +1,8 @@
 <template>
   <main>
   <v-container fluid :class="{ 'py-0' : !$vuetify.breakpoint.smAndDown, 'px-0' : !$vuetify.breakpoint.mdAndUp}">    
-      <v-card class="elevation-8 queue">
-	<v-toolbar dark>
+      <v-card class="elevation-2 queue" >
+	<v-toolbar flat>
 	  <v-toolbar-title>
 	    {{$store.state.list.queuesList[queue]}}
 	  </v-toolbar-title>
