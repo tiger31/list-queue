@@ -74,9 +74,11 @@ const list = {
 			let orders = {};
 			for (let element of payload.data.elements)
 				elements[element.id] = element.name;
-			for (let queue of payload.data.queues) {
-				queues[queue.id] = queue.name;
-				orders[queue.id] = queue.order;
+			console.log(payload.data);
+			for (let queue in payload.data.queues) {
+
+				queues[queue] = payload.data.queues[queue].name;
+				orders[queue] = payload.data.queues[queue].order;
 			}
 			state.elements = elements;
 			state.queuesList = queues;

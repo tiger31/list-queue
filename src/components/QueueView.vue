@@ -60,7 +60,7 @@ export default {
 					v => !!v || "Название очереди не может быть пустой строкой"
 				]
       },
-      newQueuesList: []
+			newQueuesList: []
     }
   },
   computed: {
@@ -70,13 +70,13 @@ export default {
       else {
         let old = this.listData.queues.map(e => e).sort(this.sort);
         let n = this.newQueuesList.map(e => e).sort(this.sort);
-		for (let i = 0; i < n.length; i++)
-            if (old[i].id != n[i].id || old[i].order.length != n[i].order.length)
-                return true;
-            else
-                for (let j = 0; j < n[i].order.length; j++)
-                    if (n[i].order[j] != old[i].order[j])
-                        return true;
+				for (let i = 0; i < n.length; i++)
+        	if (old[i].id != n[i].id || old[i].order.length != n[i].order.length)
+         		return true;
+          else
+          	for (let j = 0; j < n[i].order.length; j++)
+							if (n[i].order[j] != old[i].order[j])
+								return true;
         return false;
       }
     },
@@ -92,7 +92,7 @@ export default {
       if (this.newQueue) {
 				let ids = [];
 					ids.push(...this.newQueuesList.map(e => e.id), 
-						...this.listData.queues.map(e => e.id));
+						...Object.values(this.listData.queues).map(e => e.id));
 				let id = ((ids.length > 0) ? Math.max(...ids) : -1) + 1;
 				this.newQueuesList.push({
 					id: id,
@@ -111,7 +111,10 @@ export default {
     saveQueues() {
       if (this.changed) {
 				firebase.firestore().collection("lists").doc(this.list).update({
-					queues: this.newQueuesList
+					queues: this.newQueuesList.reduce((map, obj) => {
+						map[obj.id] = obj;
+						return map
+					}, {})
 				}).then(() => this.$emit("updateQueues", this.list, Object.values(Vue.util.extend(this.newQueuesList))));
       }
     }

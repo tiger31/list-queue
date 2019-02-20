@@ -1,19 +1,14 @@
 <template>
 <v-app>
-	<v-navigation-drawer class="elevation-10" floating app>
+	<v-navigation-drawer class="elevation-5" floating app>
 		<Navbar :queuesList="queuesList" :list="currentList"></Navbar>
 	</v-navigation-drawer>
-  <v-toolbar dense app>
-    <v-toolbar-title>Queue?</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-toolbar-items>
-			<v-text-field class="elevation-0" label="Найти список" single-line>
-			</v-text-field>
-    </v-toolbar-items>
-  </v-toolbar>
   <v-content>
     <v-container fluid>
       <v-layout wrap justify-space-around row>
+				<v-flex xs12>
+					
+				</v-flex>
 				<v-flex md8 sm12>
 				  <Queue :queue="currentQueue"/>
 				</v-flex>
