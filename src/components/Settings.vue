@@ -1,69 +1,36 @@
 <template>
-  <v-app>
-    <v-navigation-drawer app dark>
-      <v-list dense>
-	<div class="subtitle pl-4" color="white">
-	  Списки
-	</div>
-	<v-list-tile>
-	  <v-list-tile-avatar tile>
-	    <v-icon>view_headline</v-icon>
-	  </v-list-tile-avatar>
-	  <v-list-tile-content>
-	    <v-list-tile-title>
-	      Мои списки
-	    </v-list-tile-title>
-	  </v-list-tile-content>
-	</v-list-tile>
-	<div class="subtitle pl-4" color="white">
-	  Аккаунт
-	</div>
-	<v-list-tile>
-	  <v-list-tile-avatar tile>
-	    <v-icon>settings</v-icon>
-	  </v-list-tile-avatar>
-	  <v-list-tile-content>
-	    <v-list-tile-title>
-	      Настройки
-	    </v-list-tile-title>
-	  </v-list-tile-content>
-	</v-list-tile>
-	<v-list-tile>
-	  <v-list-tile-avatar tile>
-	    <v-icon>power_settings_new</v-icon>
-	  </v-list-tile-avatar>
-	  <v-list-tile-content>
-	    <v-list-tile-title>
-	      Выйти
-	    </v-list-tile-title>
-	  </v-list-tile-content>
-	</v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-content>
-    <v-container fluid>
-      <v-layout wrap justify-space-around row>
-	<v-flex md8 sm12>
-	  <v-container fluid>
-	    <v-text-field v-model="newList" :rules="rules.newList" label="Добавить список" solo></v-text-field>
-	    <v-btn color="info"
-	      @click="addNewList"
-	      :loadind="loaders.newList"
-	      :disabled="loaders.newList"
-	    >Добавить</v-btn>
-	  </v-container>
-		<v-container>
-			<UserLists @listChoose="setActiveList" :lists="lists"/>
-		</v-container>
-	  <v-container v-if="currentList" fluid>
-	    <ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
-			<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
-	  </v-container>
-	</v-flex>
-      </v-layout>
-    </v-container>
-    </v-content>
-  </v-app>
+	<v-app>
+		<v-content>
+			<v-container fluid>
+				<v-layout wrap justify-space-around row>
+					<v-flex xs12>
+						<v-container v-if="currentList">
+							<v-layout row>
+								<v-flex  v-for="queue in lists[currentList].queues" :key="queue.id" sm12 md4>
+									<QueueCard :queue="queue"></QueueCard>
+								</v-flex>
+							</v-layout>
+						</v-container>
+						<v-container fluid>
+							<v-text-field v-model="newList" :rules="rules.newList" label="Добавить список" solo></v-text-field>
+							<v-btn color="info"
+								   @click="addNewList"
+								   :loadind="loaders.newList"
+								   :disabled="loaders.newList"
+							>Добавить</v-btn>
+						</v-container>
+						<v-container>
+							<UserLists @listChoose="setActiveList" :lists="lists"/>
+						</v-container>
+						<v-container v-if="currentList" fluid>
+							<ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
+							<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
+						</v-container>
+					</v-flex>
+				</v-layout>
+			</v-container>
+		</v-content>
+	</v-app>
 </template>
 
 <script>
@@ -73,9 +40,11 @@ import ListView from './ListView.vue'
 import UserLists from './UserLists.vue'
 import QueueView from './QueueView.vue'
 
+import QueueCard from './queue/QueueCard'
+
 export default {
   name: 'Settings',
-  components: { ListView, QueueView, UserLists },
+  components: { ListView, QueueView, UserLists, QueueCard},
   data () {
     return {
       newList: "",
@@ -88,7 +57,7 @@ export default {
       loaders: {
         newList: false
       },
-			lists: {},
+		lists: {},
     }
   },
   computed: {
