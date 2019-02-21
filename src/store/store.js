@@ -117,12 +117,74 @@ const list = {
 				});
       }
       return false;
-    }
+    },
   },
 }
-
+const user = {
+	state: {
+		listener: undefined,
+		listenerAttached: false,
+		lists: {}
+	},
+	mutations: {
+		//Listener
+		setUserListsListener(state, payload) {
+			state.listener = payload.listener;
+			state.listenerAttached = true;
+		},
+		removeUserListsListener(state) {
+			if (state.listenerAttached)
+				state.listener()
+			state.listenerAttached = false;
+		},
+		//Setters
+		setList(state, payload) {
+			Vue.set(state.lists, payload.list, payload.data);
+		},
+		setLists(state, payload) {
+			state.lists = payload.lists.docs.reduce((map, obj) => {
+				map[obj.id] = obj.data();
+				return map;
+			}, {});
+		},
+	},
+	actions: {
+		//Add/Update
+		async setQueue({ state, commit }, payload) {
+			return new Promise((resolve, reject) => {
+				firebase.firestore().collection("lists").doc(payload.list).update({
+					[`queues.${payload.queue.id}`] : payload.queue
+				}).then(() => {
+					resolve();
+				}).catch((err) => reject(err));
+			});
+		},
+		//Get
+		async getUserLists({ state, commit }) {
+			commit('removeUserListsListener');
+			return new Promise((resolve, reject) => {
+				if (!firebase.auth().currentUser)
+					reject(new Error("User not found"));
+				const userListsListener = firebase.firestore().collection("lists")
+					.where("owner", "==", firebase.auth().currentUser.uid)
+					.onSnapshot((querySnapshot) => {
+						commit('setLists', { lists: querySnapshot });
+						resolve();
+					}, (err) => reject(err));
+				commit('setUserListsListener', { listener: userListsListener });
+			})
+		},
+		//Remove
+		async removeQueue({ state }, payload) {
+			return firebase.firestore().collection("lists").doc(payload.list).update({
+				[`queues.${payload.queue.id}`] : firebase.firestore.FieldValue.delete()
+			});
+		}
+	}
+}
 export default new Vuex.Store({
   modules: {
     list: list,
+		user: user,
   }
 })

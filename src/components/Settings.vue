@@ -4,13 +4,6 @@
 			<v-container fluid>
 				<v-layout wrap justify-space-around row>
 					<v-flex xs12>
-						<v-container v-if="currentList">
-							<v-layout row>
-								<v-flex  v-for="queue in lists[currentList].queues" :key="queue.id" sm12 md4>
-									<QueueCard :queue="queue"></QueueCard>
-								</v-flex>
-							</v-layout>
-						</v-container>
 						<v-container fluid>
 							<v-text-field v-model="newList" :rules="rules.newList" label="Добавить список" solo></v-text-field>
 							<v-btn color="info"
@@ -23,8 +16,14 @@
 							<UserLists @listChoose="setActiveList" :lists="lists"/>
 						</v-container>
 						<v-container v-if="currentList" fluid>
-							<ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
-							<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
+							<v-layout wrap row>
+								<v-flex sm12 md6>
+									<ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
+								</v-flex>
+								<v-flex sm12 md6>
+									<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
+								</v-flex>
+							</v-layout>
 						</v-container>
 					</v-flex>
 				</v-layout>
@@ -57,12 +56,14 @@ export default {
       loaders: {
         newList: false
       },
-		lists: {},
     }
   },
   computed: {
 		currentListData() {
 			return (this.currentList) ? this.lists[this.currentList] : undefined;
+		},
+		lists() {
+			return this.$store.state.user.lists;
 		}
 	},
   methods: {
@@ -83,17 +84,17 @@ export default {
 				.catch((err) => console.log("Ошибка при получание списков пользователя", err));
 		},
 		updateList(list, elements) {
-			Vue.set(this.lists[list], 'elements', elements)
+			//Vue.set(this.lists[list], 'elements', elements)
 		},
 		updateQueues(list, elements) {
-			Vue.set(this.lists[list], 'queues', elements)
+			//Vue.set(this.lists[list], 'queues', elements)
 		}
   },
 	mounted () {
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user)
 				user.getIdToken()
-					.then(() => this.getUserLists())
+					.then(() => this.$store.dispatch('getUserLists'))
 					.catch((err) => console.log(err))
 		})
 	}
