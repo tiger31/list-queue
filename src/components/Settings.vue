@@ -18,10 +18,10 @@
 						<v-container v-if="currentList" fluid>
 							<v-layout wrap row>
 								<v-flex sm12 md6>
-									<ListView :list="currentList" :listData="currentListData" @updateList="updateList"/>
+									<ListView :list="currentList" :listData="currentListData" />
 								</v-flex>
 								<v-flex sm12 md6>
-									<QueueView :list="currentList" :listData="currentListData" @updateQueues="updateQueues"/>
+									<QueueView :list="currentList" :listData="currentListData" />
 								</v-flex>
 							</v-layout>
 						</v-container>
@@ -78,17 +78,6 @@ export default {
 		setActiveList(key) {
 		  this.currentList = key;
 		},
-		getUserLists () {	
-			firebase.firestore().collection("lists").where("owner", "==", firebase.auth().currentUser.uid).get()
-				.then((querySnapshot) => querySnapshot.forEach(doc => Vue.set(this.lists, doc.id, doc.data())))
-				.catch((err) => console.log("Ошибка при получание списков пользователя", err));
-		},
-		updateList(list, elements) {
-			//Vue.set(this.lists[list], 'elements', elements)
-		},
-		updateQueues(list, elements) {
-			//Vue.set(this.lists[list], 'queues', elements)
-		}
   },
 	mounted () {
 		firebase.auth().onAuthStateChanged((user) => {

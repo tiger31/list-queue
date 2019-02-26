@@ -53,30 +53,25 @@ export default {
   methods: {
     addQueue () {
       if (this.newQueue) {
-				let ids = [];
-				ids.push(...Object.values(this.listData.queues).map(e => e.id));
-				let id = ((ids.length > 0) ? Math.max(...ids) : -1) + 1;
 				let queue = {
-					id: id,
+					id: this.$store.getters.nextQueueId(this.list),
 					name: this.newQueue,
 					order: this.listData.elements.map(e => e.id)
 				}
-				this.newQueue = "";
-				this.addingNewQueue = false;
 				this.$store.dispatch('setQueue', {
 					list: this.list,
-					queue: queue
-				}).finally(() => console.log("Saved... or not..."))
+					queue: queue,
+					updateNextId: true
+				}).finally(() => {
+					this.newQueue = "";
+					this.addingNewQueue = false;
+					console.log("Saved... or not...")
+				})
       }
     },
 		removeQueue(queue) {
 			this.$store.dispatch('removeQueue', { list: this.list, queue: queue });
 		},
-    sort(a, b) {
-      if (a.id < b.id) return -1;
-      else if (a.id > b.id) return 1;
-      return 0;
-    },
   },
 }
 

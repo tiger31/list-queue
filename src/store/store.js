@@ -76,7 +76,6 @@ const list = {
 				elements[element.id] = element.name;
 			console.log(payload.data);
 			for (let queue in payload.data.queues) {
-
 				queues[queue] = payload.data.queues[queue].name;
 				orders[queue] = payload.data.queues[queue].order;
 			}
@@ -106,18 +105,6 @@ const list = {
 				.catch((err) => console.log(err));
     },
     //Adders
-    async addList({ dispatch, commit }, payload) {
-      if (firebase.auth().currentUser) {
-      	return firebase.firestore().collection("lists").add({
-	  			owner: firebase.auth().currentUser.uid,
-				  name: payload.name,
-				  elements: [],
-				  editors: [],
-				  queues: {},
-				});
-      }
-      return false;
-    },
   },
 }
 const user = {
@@ -125,6 +112,10 @@ const user = {
 		listener: undefined,
 		listenerAttached: false,
 		lists: {}
+	},
+	getters: {
+		nextQueueId: state => list => state.lists[list].nextId.queue.next().value,
+		nextElementId: state => list => state.lists[list].nextId.element.next().value
 	},
 	mutations: {
 		//Listener
@@ -138,12 +129,16 @@ const user = {
 			state.listenerAttached = false;
 		},
 		//Setters
-		setList(state, payload) {
-			Vue.set(state.lists, payload.list, payload.data);
-		},
 		setLists(state, payload) {
 			state.lists = payload.lists.docs.reduce((map, obj) => {
 				map[obj.id] = obj.data();
+				for(let generator in map[obj.id].nextId) {
+					const start = map[obj.id].nextId[generator];
+					map[obj.id].nextId[generator] = (function* () {
+						for (let i = start;;i++)
+							yield i;
+					})();
+				}
 				return map;
 			}, {});
 		},
@@ -151,14 +146,37 @@ const user = {
 	actions: {
 		//Add/Update
 		async setQueue({ state, commit }, payload) {
-			return new Promise((resolve, reject) => {
-				firebase.firestore().collection("lists").doc(payload.list).update({
-					[`queues.${payload.queue.id}`] : payload.queue
-				}).then(() => {
-					resolve();
-				}).catch((err) => reject(err));
-			});
+			const update = {
+				[`queues.${payload.queue.id}`] : payload.queue
+			}
+			if (payload.updateNextId)
+				update["nextId.queue"] = state.lists[payload.list].nextId.queue.next().value;
+			return firebase.firestore().collection("lists").doc(payload.list).update(update);
 		},
+		async setElements({ state }, payload) {
+			const update = {
+				[`elements.${payload.element.id}`] : payload.element
+			}
+			if (payload.updateNextId)
+				update["nextId.element"] = state.lists[payload.lists].nextId.element.next().value;
+			return firebase.firestore().collection("lists").doc(payload.list).update(update);
+		},
+    async addList({ dispatch, commit }, payload) {
+      if (firebase.auth().currentUser) {
+      	return firebase.firestore().collection("lists").add({
+	  			owner: firebase.auth().currentUser.uid,
+				  name: payload.name,
+					nextId: {
+						queue: 0,
+						element: 0
+					},
+				  elements: [],
+				  editors: [],
+				  queues: {},
+				});
+      }
+      return false;
+    },
 		//Get
 		async getUserLists({ state, commit }) {
 			commit('removeUserListsListener');
@@ -179,7 +197,7 @@ const user = {
 			return firebase.firestore().collection("lists").doc(payload.list).update({
 				[`queues.${payload.queue.id}`] : firebase.firestore.FieldValue.delete()
 			});
-		}
+		},
 	}
 }
 export default new Vuex.Store({

@@ -1,44 +1,44 @@
 <template>
  <div v-if="present">
-   <div class="headline">{{listData.name}}</div>
-   <v-card class="elevation-5 pb-3">
-       <v-toolbar color="white" class="elevation-0" dense>
-	 <v-spacer></v-spacer> 
-	 <v-btn icon flat @click="editMode = !editMode">
-	   <v-icon>settings</v-icon>
-	 </v-btn>  
-       </v-toolbar>
-       <v-list>
-	 <div class="empty" v-if="newElementsList.length === 0 && !addingNewElement">Список пуст</div>
-	 <v-list-tile v-if="newElementsList.length > 0" v-for="element in newElementsList" :key="element.id">
-	   <v-list-tile-title>
-	     {{element.name}}
-	   </v-list-tile-title>
-	   <v-spacer></v-spacer>
-	 </v-list-tile>
-	 <v-list-tile v-if="addingNewElement">
-	   <v-list-tile-content>
-	     <v-text-field v-model="newElement" :rules="rules.newElement" label="Элемент">
-	     </v-text-field>
-	   </v-list-tile-content>
-	   <v-spacer></v-spacer>
-	     <v-btn color="success" flat icon @click="addNewElement">
+	 <div class="headline">{{listData.name}}</div>
+	 <v-card class="elevation-5 pb-3">
+		 <v-toolbar color="white" class="elevation-0" dense>
+			 <v-spacer></v-spacer> 
+			 <v-btn icon flat @click="editMode = !editMode">
+				 <v-icon>settings</v-icon>
+			 </v-btn>  
+		 </v-toolbar>
+		 <v-list>
+			 <div class="empty" v-if="newElementsList.length === 0 && !addingNewElement">Список пуст</div>
+			 <v-list-tile v-if="newElementsList.length > 0" v-for="element in newElementsList" :key="element.id">
+				 <v-list-tile-title>
+					 {{element.name}}
+				 </v-list-tile-title>
+				 <v-spacer></v-spacer>
+			 </v-list-tile>
+			 <v-list-tile v-if="addingNewElement">
+				 <v-list-tile-content>
+					 <v-text-field v-model="newElement" :rules="rules.newElement" label="Элемент">
+					 </v-text-field>
+				 </v-list-tile-content>
+				 <v-spacer></v-spacer>
+				 <v-btn color="success" flat icon @click="addNewElement">
 	       <v-icon>add_circle</v-icon>
-	     </v-btn>
-	     <v-btn color="error" flat icon @click="addingNewElement = false; newElement=''">
-	       <v-icon>remove_circle</v-icon>
-	     </v-btn>
-	 </v-list-tile>
-       </v-list>
-       <v-card-actions>
-	 <v-spacer></v-spacer>
-	 <v-btn color="success" v-if="changed" @click="saveElements">
-	   Сохранить
-	 </v-btn>
-	 <v-btn color="info" @click="addingNewElement = true" :disabled="addingNewElement">
-	   Добавить элемент
-	 </v-btn>
-       </v-card-actions>
+				 </v-btn>
+				 <v-btn color="error" flat icon @click="addingNewElement = false; newElement=''">
+					 <v-icon>remove_circle</v-icon>
+				 </v-btn>
+			 </v-list-tile>
+		 </v-list>
+		 <v-card-actions>
+			 <v-spacer></v-spacer>
+			 <v-btn color="success" v-if="changed" @click="saveElements">
+				 Сохранить
+			 </v-btn>
+			 <v-btn color="info" @click="addingNewElement = true" :disabled="addingNewElement">
+				 Добавить элемент
+			 </v-btn>
+		 </v-card-actions>
    </v-card>
  </div>
 </template>
